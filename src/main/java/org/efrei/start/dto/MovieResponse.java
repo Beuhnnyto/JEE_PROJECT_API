@@ -4,22 +4,20 @@ import java.util.Set;
 
 import org.efrei.start.global.Category;
 
-
-public class CreateMovie {
-
+public class MovieResponse {
     private String id;
     private String title;
     private int year;
     private Category category;
     private double rating; // Ranking system (1.0 to 10.0)
-    private Set<String> actorIds; // Actor IDs
+    private Set<String> actorIds; // Set of Actor IDs
     private String directorId; // Director ID
 
     // Constructors
-    public CreateMovie() {
+    public MovieResponse() {
     }
 
-    public CreateMovie(String id, String title, int year, Category category, double rating, Set<String> actorIds,
+    public MovieResponse(String id, String title, int year, Category category, double rating, Set<String> actorIds,
             String directorId) {
         this.id = id;
         this.title = title;

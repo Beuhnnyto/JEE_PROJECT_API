@@ -1,74 +1,114 @@
 package org.efrei.start.models;
 
-import java.util.List;
-import java.util.Locale.Category;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import org.efrei.start.global.Category;
 
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "film")
 public class Movie {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private String id;
 
-    private String title;
+	private String title;
+	private int year;
 
-    @OneToMany
-    private List<Actor> actors;
+	@Enumerated(EnumType.STRING)
+	private Category category;
 
+	private double rating; // Ranking system as a rating (1.0 to 10.0)
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(name = "movie_actor", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "actor_id"))
+	private Set<Actor> actors = new HashSet<>();
 
-    public Movie() {
-    }
+	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<Review> reviews = new HashSet<>();
 
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinColumn(name = "director_id")
+	private Director director;
 
-    public Movie(String title) {
-        this.title = title;
-    }
+	// Constructors
+	public Movie() {
+	}
 
+	public Movie(String title, int year, Category category, double rating, Director director) {
+		this.id = UUID.randomUUID().toString(); // Generate UUID
+		this.title = title;
+		this.year = year;
+		this.category = category;
+		this.rating = rating;
+		this.director = director;
+	}
 
-    public Category getCategory() {
-        return this.category;
-    }
+	// Getters and Setters
+	public String getId() {
+		return id;
+	}
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }    
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getId() {
-        return this.id;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public String getTitle() {
-        return this.title;
-    }
+	public int getYear() {
+		return year;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setYear(int year) {
+		this.year = year;
+	}
 
-    public List<Actor> getActors() {
-        return this.actors;
-    }
+	public Category getCategory() {
+		return category;
+	}
 
-    public void setActors(List<Actor> actors) {
-        this.actors = actors;
-    }
-    
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public double getRating() {
+		return rating;
+	}
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+
+	public Set<Actor> getActors() {
+		return actors;
+	}
+
+	public void setActors(Set<Actor> actors) {
+		this.actors = actors;
+	}
+
+	public Set<Review> getReviews() {
+		return reviews;
+	}
+
+	public void setReviews(Set<Review> reviews) {
+		this.reviews = reviews;
+	}
+
+	public Director getDirector() {
+		return director;
+	}
+
+	public void setDirector(Director director) {
+		this.director = director;
+	}
 }
