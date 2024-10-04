@@ -35,7 +35,7 @@ public class MovieController {
         return new ResponseEntity<>(convertToResponse(movie), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") // Path variable for movie ID
     public ResponseEntity<MovieResponse> getById(@PathVariable String id) {
         Movie movie = movieService.getById(id);
         return movie != null ? new ResponseEntity<>(convertToResponse(movie), HttpStatus.OK)
@@ -51,26 +51,27 @@ public class MovieController {
         return new ResponseEntity<>(movieResponses, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}") // Path variable for movie ID
     public ResponseEntity<MovieResponse> update(@PathVariable String id, @RequestBody CreateMovie createMovie) {
         Movie updatedMovie = movieService.update(id, createMovie);
         return updatedMovie != null ? new ResponseEntity<>(convertToResponse(updatedMovie), HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") // Path variable for movie ID
     public ResponseEntity<Void> delete(@PathVariable String id) {
         movieService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Helper method to convert Movie to MovieResponse
-    private MovieResponse convertToResponse(Movie movie) {
-        Set<String> actorIds = movie.getActors().stream()
-                .map(actor -> actor.getId()) // Get actor IDs
-                .collect(Collectors.toSet());
-        String directorId = movie.getDirector() != null ? movie.getDirector().getId() : null; // Get director ID
-        return new MovieResponse(movie.getId(), movie.getTitle(), movie.getYear(), movie.getCategory(),
-                movie.getRating(), actorIds, directorId);
-    }
+private MovieResponse convertToResponse(Movie movie) {
+    Set<String> actorIds = movie.getActors() != null ? movie.getActors().stream()
+            .filter(actor -> actor != null && actor.getId() != null) // Add null check for actor and actor.getId()
+            .map(actor -> "actors/" + actor.getId()) // Prefixed with "actors/"
+            .collect(Collectors.toSet()) : Set.of();
+    String directorId = movie.getDirector() != null ? "directors/" + movie.getDirector().getId() : null; // Prefixed with "directors/"
+    return new MovieResponse(movie.getId(), movie.getTitle(), movie.getYear(), movie.getCategory(),
+            movie.getRating(), actorIds, directorId); // Updated response model
+}
 }

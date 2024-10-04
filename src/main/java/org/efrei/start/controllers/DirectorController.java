@@ -39,20 +39,24 @@ public class DirectorController {
 
         Director createdDirector = directorService.create(createDirector);
         DirectorResponse response = new DirectorResponse(
-                createdDirector.getId(),
+                createdDirector.getId(), // No prefix here
                 createdDirector.getName(),
-                createdDirector.getMovies());
+                createdDirector.getMovies().stream()
+                        .map(movie -> "movies/" + movie.getId()) // Prefix movie IDs with "movies/"
+                        .collect(Collectors.toSet())); // Set<String> movieIds
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DirectorResponse> getById(@PathVariable String id) {
-        Director director = directorService.getById(id);
+    @GetMapping("/{directorId}") // Updated path variable
+    public ResponseEntity<DirectorResponse> getById(@PathVariable String directorId) {
+        Director director = directorService.getById(directorId);
         if (director != null) {
             DirectorResponse response = new DirectorResponse(
-                    director.getId(),
+                    director.getId(), // No prefix here
                     director.getName(),
-                    director.getMovies());
+                    director.getMovies().stream()
+                            .map(movie -> "movies/" + movie.getId()) // Prefix movie IDs with "movies/"
+                            .collect(Collectors.toSet())); // Set<String> movieIds
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -64,31 +68,35 @@ public class DirectorController {
         Director[] directors = directorService.getAll();
         List<DirectorResponse> responses = Arrays.stream(directors)
                 .map(director -> new DirectorResponse(
-                        director.getId(),
+                        director.getId(), // No prefix here
                         director.getName(),
-                        director.getMovies()))
-                .collect(Collectors.toList());
+                        director.getMovies().stream()
+                                .map(movie -> "movies/" + movie.getId()) // Prefix movie IDs with "movies/"
+                                .collect(Collectors.toSet())) // Set<String> movieIds
+                ).collect(Collectors.toList());
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DirectorResponse> update(@PathVariable String id,
+    @PutMapping("/{directorId}") // Updated path variable
+    public ResponseEntity<DirectorResponse> update(@PathVariable String directorId,
             @RequestBody CreateDirector createDirector) {
-        Director updatedDirector = directorService.update(id, createDirector);
+        Director updatedDirector = directorService.update(directorId, createDirector);
         if (updatedDirector != null) {
             DirectorResponse response = new DirectorResponse(
-                    updatedDirector.getId(),
+                    updatedDirector.getId(), // No prefix here
                     updatedDirector.getName(),
-                    updatedDirector.getMovies());
+                    updatedDirector.getMovies().stream()
+                            .map(movie -> "movies/" + movie.getId()) // Prefix movie IDs with "movies/"
+                            .collect(Collectors.toSet())); // Set<String> movieIds
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        directorService.delete(id);
+    @DeleteMapping("/{directorId}") // Updated path variable
+    public ResponseEntity<Void> delete(@PathVariable String directorId) {
+        directorService.delete(directorId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

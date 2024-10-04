@@ -1,8 +1,6 @@
 package org.efrei.start.dto;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import org.efrei.start.models.Movie;
 
 public class DirectorResponse {
     private String id;
@@ -13,10 +11,11 @@ public class DirectorResponse {
     public DirectorResponse() {
     }
 
-    public DirectorResponse(String id, String name, Set<Movie> movies) {
+    // Updated constructor to accept Set<String>
+    public DirectorResponse(String id, String name, Set<String> movieIds) {
         this.id = id;
         this.name = name;
-        this.movieIds = movies.stream().map(Movie::getId).collect(Collectors.toSet());
+        this.movieIds = movieIds; // Directly assign the passed movie IDs
     }
 
     // Getters and Setters
